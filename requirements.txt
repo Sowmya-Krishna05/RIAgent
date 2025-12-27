@@ -1,0 +1,7 @@
+pathway
+streamlit
+langchain
+openai
+requests
+beautifulsoup4
+lxml
