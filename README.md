@@ -84,12 +84,22 @@ Streamlit Interface
 
 ## ⚙️ Installation & Setup
 
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/YOUR_USERNAME/RIAgent.git
+cd RIAgent
+
+### 2️⃣ Create a virtual environment
+```bash
+python -m venv venv
+Activate it: venv\Scripts\activate
+
+### 3️⃣ Install dependencies
 ```bash
 pip install -r requirements.txt
+▶️ Running the Application
+```bash
 streamlit run app.py
-```
-
----
 
 ## ⚠️ Disclaimer
 
