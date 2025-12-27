@@ -1,57 +1,97 @@
-# Live Regulatory Intelligence Agent (Track 1 – Synaptix Frontier)
+# 📜 National Live Regulatory Intelligence Agent
 
-## What this project does
-This is a **live agentic AI system** that continuously ingests regulatory documents
-and updates its answers instantly when documents are added or modified.
+A real-time policy intelligence system that continuously ingests updates from authoritative Indian government portals and converts regulatory noise into concise, actionable insights.
 
-This demonstrates **Pathway's live indexing** (not static RAG).
+This project demonstrates **live data ingestion, change detection, signal extraction, and deterministic policy reasoning** across multiple public governance domains.
 
 ---
 
-## Folder Structure
+## 🚀 Project Overview
+
+Government policy portals are information-dense, archive-heavy, and difficult to track in real time.  
+This system addresses that problem by acting as a **live regulatory intelligence layer**.
+
+It:
+- Monitors official policy sources continuously  
+- Detects updates automatically  
+- Filters archival and navigational noise  
+- Extracts only meaningful regulatory signals  
+- Answers natural-language policy and eligibility questions  
+
+The goal is **clarity, freshness, and relevance**, not document dumping.
+
+---
+
+## 🧠 Policy Domains Covered
+
+| Sector | Authority |
+|------|----------|
+| 🎓 Education | Ministry of Education / UGC |
+| 💰 Finance | Reserve Bank of India (RBI) |
+| 🏥 Healthcare | Ministry of Health & Family Welfare |
+| 👷 Labour | Ministry of Labour & Employment |
+| 💻 Digital & IT | Ministry of Electronics & IT |
+
+Each domain is ingested independently from its official source.
+
+---
+
+
+## 📂 Project Structure
+
 live_regulatory_agent/
-├── data/regulations/     # LIVE DATA SOURCE (edit files here)
-├── pathway_pipeline.py   # Pathway ingestion + vector store
-├── agent.py              # Reasoning + answer generation
-├── app.py                # Streamlit UI
+│
+├── app.py # Streamlit UI
+├── agent.py # Policy intelligence & summarization
+├── pathway_pipeline.py # Policy retrieval logic
 ├── requirements.txt
-└── README.md
+├── README.md
+│
+├── ingestion/
+│ ├── scraper_engine.py # Live ingestion & update detection
+│ ├── internet_ingestion.py
+│ └── sources.py # Source registry
+│
+├── data/
+│ ├── education/
+│ ├── finance/
+│ ├── healthcare/
+│ ├── labour/
+│ └── digital/
+│
+└── .gitignore
 
----
+## 🏗️ High-Level Architecture
 
-## STEP-BY-STEP RUN INSTRUCTIONS
+Official Government Portals
+↓
+Live Ingestion Engine
+(scraper_engine.py)
+↓
+Noise Filtering + Change Detection
+↓
+Sector-wise Policy Store (data/)
+↓
+Policy Retrieval & Prioritization
+(pathway_pipeline.py)
+↓
+Policy Intelligence Layer
+(agent.py)
+↓
+Streamlit Interface
+(app.py)
 
-### 1. Install dependencies
+
+## ⚙️ Installation & Setup
+
 ```bash
 pip install -r requirements.txt
-```
-
-### 2. Add regulatory documents
-Edit or add text files inside:
-```
-data/regulations/
-```
-
-### 3. Run the app
-```bash
 streamlit run app.py
 ```
 
-### 4. LIVE DEMO
-- Ask a question
-- Edit a document in `data/regulations/`
-- Ask again → answer updates instantly
-
 ---
 
-## WHAT TO CHANGE (IMPORTANT)
-- Replace OpenAI API key in `agent.py`
-- Replace document text to show live updates
+## ⚠️ Disclaimer
 
----
-
-## Why this wins
-✔ No re-embedding  
-✔ No redeploy  
-✔ Real-time reasoning  
-✔ Clear demo
+This project is built for academic and demonstrative purposes.  
+It is **not a substitute for official legal or regulatory advice**.
