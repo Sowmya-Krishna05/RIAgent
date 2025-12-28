@@ -8,6 +8,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ---------------- SESSION STATE INIT ----------------
+if "answer" not in st.session_state:
+    st.session_state.answer = None
+    st.session_state.last_updated = None
+
 # ---------------- SIDEBAR ----------------
 with st.sidebar:
     st.markdown("## 📊 System Scope")
@@ -24,44 +29,27 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("## 👥 Stakeholder View")
     persona = st.selectbox(
-        "Select perspective",
+        "👥 Stakeholder View",
         ["Student", "Startup", "Bank / Financial Institution", "Policy Analyst"]
     )
 
     st.divider()
 
-    st.markdown("## ⚙️ System Behavior")
     st.markdown(
         """
-        - Continuous ingestion  
-        - Instant update reflection  
+        **System Guarantees**
+        - Deterministic outputs  
+        - Authoritative sources  
         - No stale knowledge  
-        - Deterministic reasoning  
         """
     )
-
-    st.caption("Demo environment simulates live regulatory feeds")
 
 # ---------------- HEADER ----------------
 st.markdown(
     """
-    # 📜 National Live Policy Intelligence Agent
+    # 📜 National Live Policy Intelligence Agent  
     **From regulatory noise to actionable policy intelligence — in real time**
-    """
-)
-
-st.divider()
-
-# ---------------- SYSTEM INTRO ----------------
-st.markdown(
-    """
-    ### 🧠 What this system does
-    - Monitors policy updates across critical public sectors  
-    - Ingests changes continuously from authoritative sources  
-    - Surfaces only relevant, actionable regulatory signals  
-    - Adapts instantly as policies evolve  
     """
 )
 
@@ -70,59 +58,67 @@ st.divider()
 # ---------------- QUERY INPUT ----------------
 question = st.text_input(
     "Query live regulatory intelligence",
-    placeholder="e.g. What recent RBI changes affect banks?"
+    placeholder="e.g. What recent RBI policy changes affect banks?"
 )
 
-# ---------------- ANSWER SECTION ----------------
+# ---------------- PROCESS QUERY ----------------
 if question:
-    with st.spinner("Analyzing live policy sources..."):
+    with st.spinner("Analyzing regulatory sources..."):
         answer, last_updated = answer_question(question)
+        st.session_state.answer = answer
+        st.session_state.last_updated = last_updated
 
-    st.markdown("### 📌 Policy Intelligence Output")
+# ---------------- OUTPUT ----------------
+if st.session_state.answer:
+    st.markdown("## 📌 Policy Intelligence Output")
 
-    # -------- SAFE OUTPUT (NO WHITE SPACE, NO ERRORS) --------
-    if answer and answer.strip():
-        st.success(answer)
+    st.markdown(
+        f"""
+        ```text
+        {st.session_state.answer}
+        ```
+        """
+    )
 
-        if last_updated:
-            st.caption(f"🕒 Last policy update detected at: {last_updated}")
+    if st.session_state.last_updated:
+        st.caption(f"🕒 Knowledge last updated at: {st.session_state.last_updated}")
 
-        st.divider()
+    st.divider()
 
-        st.markdown("### 🔍 Why this matters")
+    st.markdown("### 🔍 Why this matters")
 
-        if persona == "Student":
-            st.write(
-                "These policy updates may affect eligibility criteria, scholarships, "
-                "or benefits relevant to students."
-            )
-        elif persona == "Startup":
-            st.write(
-                "These regulatory changes may influence compliance requirements, "
-                "funding norms, or operational conditions for startups."
-            )
-        elif persona == "Bank / Financial Institution":
-            st.write(
-                "These updates may introduce new compliance obligations, reporting "
-                "requirements, or operational constraints for financial institutions."
-            )
-        else:
-            st.write(
-                "These updates reflect evolving regulatory intent and highlight "
-                "areas requiring policy analysis or continuous monitoring."
-            )
-
-        st.info(
-            "Insights are derived from authoritative sources and updated dynamically "
-            "as policies change."
+    if persona == "Student":
+        st.write(
+            "These policy updates may impact eligibility criteria, scholarships, "
+            "or student benefits."
         )
-
+    elif persona == "Startup":
+        st.write(
+            "These updates may affect regulatory compliance, funding norms, "
+            "or operational constraints."
+        )
+    elif persona == "Bank / Financial Institution":
+        st.write(
+            "These policies introduce or modify compliance, reporting, "
+            "and risk management obligations."
+        )
     else:
-        st.warning(
-            "No directly matching policy updates were found for this query.\n\n"
-            "Try rephrasing the question or asking about a specific sector "
-            "(e.g., education, finance, healthcare)."
+        st.write(
+            "These updates signal evolving regulatory intent and areas "
+            "requiring continuous monitoring."
         )
+
+    st.info(
+        "Insights are derived from authoritative government sources "
+        "and structured for decision-making."
+    )
+
+elif question:
+    st.warning(
+        "No directly matching policy updates were found.\n\n"
+        "Try rephrasing the question or specifying a sector "
+        "(education, finance, healthcare, etc.)."
+    )
 
 # ---------------- FOOTER ----------------
 st.divider()

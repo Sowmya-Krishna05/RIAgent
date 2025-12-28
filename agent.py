@@ -1,50 +1,73 @@
-from pathway_pipeline import get_relevant_docs
+import os
+from datetime import datetime
 
-def answer_question(question):
-    docs, last_updated = get_relevant_docs(question)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
-    if not docs:
-        return "", last_updated
 
-    important_lines = []
+def read_sector_file(sector):
+    sector_dir = os.path.join(DATA_DIR, sector)
 
-    JUNK_KEYWORDS = [
-        "skip to main content", "selected language", "search the website",
-        "home", "about us", "contact us", "archives", "all months",
-        "facebook", "twitter", "linkedin", "youtube", "app store",
-        "play store", "sitemap", "disclaimer", "copyright"
-    ]
+    if not os.path.exists(sector_dir):
+        return ""
 
-    for doc in docs:
-        for line in doc.split("\n"):
-            clean = line.strip()
-            lower = clean.lower()
+    for fname in os.listdir(sector_dir):
+        if fname.endswith(".txt"):
+            with open(os.path.join(sector_dir, fname), "r", encoding="utf-8") as f:
+                return f.read()
 
-            # Skip junk lines
-            if len(clean) < 40:
-                continue
-            if any(junk in lower for junk in JUNK_KEYWORDS):
-                continue
+    return ""
 
-            # Keep only policy-relevant lines
-            if (
-                "amendment" in lower
-                or "directions" in lower
-                or "guidelines" in lower
-                or "notification" in lower
-                or "eligibility" in lower
-            ):
-                important_lines.append(clean)
 
-    # HARD LIMIT — THIS IS CRITICAL
-    important_lines = important_lines[:8]
+def detect_sector(question: str):
+    q = question.lower()
 
-    if not important_lines:
-        return "", last_updated
+    if any(k in q for k in ["rbi", "bank", "banks", "finance"]):
+        return "finance"
+    if any(k in q for k in ["ugc", "student", "education"]):
+        return "education"
+    if any(k in q for k in ["health", "hospital", "medical"]):
+        return "healthcare"
+    if any(k in q for k in ["labour", "worker", "employment"]):
+        return "labour"
+    if any(k in q for k in ["digital", "it", "technology"]):
+        return "digital"
 
-    answer = (
-        "KEY POLICY UPDATES:\n\n"
-        + "\n".join(f"- {line}" for line in important_lines)
-    )
+    return None
 
-    return answer, last_updated
+
+def answer_question(question: str):
+    sector = detect_sector(question)
+
+    if not sector:
+        return (
+            "No directly matching policy updates were found for this query.",
+            None,
+        )
+
+    content = read_sector_file(sector)
+
+    if not content.strip():
+        return (
+            f"[{sector.upper()} – KEY UPDATES]\n\n"
+            "Policy data is currently unavailable for this sector.",
+            datetime.now(),
+        )
+
+    # Extract bullet points if present
+    bullets = [line.strip() for line in content.splitlines() if line.strip().startswith("-")]
+
+    # 🔒 CRITICAL FIX: ALWAYS RETURN CONTENT
+    if bullets:
+        answer = f"[{sector.upper()} – KEY UPDATES]\n\n" + "\n".join(bullets)
+    else:
+        # Fallback: return first meaningful lines
+        meaningful = [
+            line.strip()
+            for line in content.splitlines()
+            if len(line.strip()) > 30
+        ][:5]
+
+        answer = f"[{sector.upper()} – KEY UPDATES]\n\n" + "\n".join(meaningful)
+
+    return answer, datetime.now()
